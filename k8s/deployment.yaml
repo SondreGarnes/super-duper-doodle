@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: super-duper-doodle
-          image: ghcr.io/YOUR_GITHUB_USERNAME/super-duper-doodle:latest
+          image: ghcr.io/sondregarnes/super-duper-doodle:latest
           ports:
             - containerPort: 80
           resources:
