@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: super-duper-doodle
+  labels:
+    app: super-duper-doodle
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: super-duper-doodle
+  template:
+    metadata:
+      labels:
+        app: super-duper-doodle
+    spec:
+      containers:
+        - name: super-duper-doodle
+          image: ghcr.io/YOUR_GITHUB_USERNAME/super-duper-doodle:latest
+          ports:
+            - containerPort: 80
+          resources:
+            requests:
+              cpu: "50m"
+              memory: "64Mi"
+            limits:
+              cpu: "100m"
+              memory: "128Mi"
