@@ -7,7 +7,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: doodle.local  # replace with your domain or local hostname
+    - host: sondregarnaes-hp-probook-450-g5.taild1fe38.ts.net
       http:
         paths:
           - path: /
