@@ -107,6 +107,37 @@ body {
   transform: scale(0.97);
 }
 
+/* About */
+.about {
+  background: var(--color-surface);
+  border-top: 1px solid #222;
+  padding: 4rem 2rem;
+}
+
+.about-inner {
+  max-width: 680px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.about-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 1.25rem;
+  color: var(--color-accent);
+}
+
+.about-text {
+  font-size: 1rem;
+  color: var(--color-muted);
+  margin-bottom: 1rem;
+  line-height: 1.8;
+}
+
+.about-text strong {
+  color: var(--color-text);
+}
+
 /* Footer */
 .site-footer {
   text-align: center;
