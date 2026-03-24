@@ -6,7 +6,7 @@ const OPTION_A = '8 Ball full force to the head'
 const OPTION_B = 'Or a Knee full force to the head'
 
 export default function Poll() {
-  const [voted, setVoted] = useState(false)
+  const [voted, setVoted] = useState(() => localStorage.getItem('poll_voted') === 'true')
   const [results, setResults] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -29,6 +29,7 @@ export default function Poll() {
       if (!res.ok) throw new Error('Vote failed')
       const data = await fetchResults()
       setResults(data)
+      localStorage.setItem('poll_voted', 'true')
       setVoted(true)
     } catch (e) {
       setError('Something went wrong. Try again.')
@@ -39,7 +40,7 @@ export default function Poll() {
 
   useEffect(() => {
     if (voted) fetchResults().then(setResults).catch(() => {})
-  }, [voted])
+  }, [])
 
   const total = results ? results.optionA + results.optionB : 0
   const pctA = total > 0 ? Math.round((results.optionA / total) * 100) : 0
@@ -91,9 +92,6 @@ export default function Poll() {
               </div>
             </div>
 
-            <button className="poll-vote-again" onClick={() => setVoted(false)}>
-              Vote again
-            </button>
           </div>
         )}
 

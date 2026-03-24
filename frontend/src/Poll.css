@@ -95,21 +95,6 @@
   background: #4fc3a1;
 }
 
-.poll-vote-again {
-  margin-top: 0.5rem;
-  background: none;
-  border: none;
-  color: var(--color-muted);
-  font-size: 0.85rem;
-  cursor: pointer;
-  text-decoration: underline;
-  align-self: center;
-}
-
-.poll-vote-again:hover {
-  color: var(--color-text);
-}
-
 .poll-error {
   text-align: center;
   color: #e06c75;
