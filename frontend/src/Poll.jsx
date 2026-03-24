@@ -51,7 +51,9 @@ export default function Poll() {
       <div className="poll-card">
         <h1 className="poll-question">{QUESTION}</h1>
 
-        {!voted ? (
+        {voted && !results ? (
+          <p className="poll-total">Loading results…</p>
+        ) : !voted ? (
           <div className="poll-options">
             <button
               className="poll-btn"
@@ -68,7 +70,7 @@ export default function Poll() {
               {OPTION_B}
             </button>
           </div>
-        ) : (
+        ) : results ? (
           <div className="poll-results">
             <p className="poll-total">{total} vote{total !== 1 ? 's' : ''} total</p>
 
@@ -93,7 +95,7 @@ export default function Poll() {
             </div>
 
           </div>
-        )}
+        ) : null}
 
         {error && <p className="poll-error">{error}</p>}
       </div>
