@@ -46,6 +46,10 @@ jobs:
             ${{ env.BACKEND_IMAGE }}:latest
             ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
 
+      - name: Apply Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/
+
       - name: Deploy to cluster
         run: |
           kubectl set image deployment/frontend frontend=${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
