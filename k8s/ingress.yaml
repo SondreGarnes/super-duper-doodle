@@ -5,7 +5,7 @@ metadata:
 spec:
   ingressClassName: traefik
   rules:
-    - host: sondregarnaes-hp-probook-450-g5.taild1fe38.ts.net
+    - host: superduperdoodle.com
       http:
         paths:
           - path: /api
