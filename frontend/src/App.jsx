@@ -19,7 +19,7 @@ export default function App() {
       <main className="main">
         <section className="hero">
           <h1 className="hero-title">Super Duper Doodle</h1>
-          <p className="hero-subtitle">A place to experiment with software architecture.</p>
+          <p className="hero-subtitle">A place to experiment with software architecture. And also maybe some drinking games</p>
           <button className="btn" onClick={() => setClicked(true)}>
             {clicked ? 'Work in Progress' : 'Get Started'}
           </button>
