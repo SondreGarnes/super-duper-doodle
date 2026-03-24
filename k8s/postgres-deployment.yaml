@@ -1,46 +1,53 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: backend
+  name: postgres
   labels:
-    app: backend
+    app: postgres
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: backend
+      app: postgres
   template:
     metadata:
       labels:
-        app: backend
+        app: postgres
     spec:
       containers:
-        - name: backend
-          image: ghcr.io/sondregarnes/super-duper-doodle-backend:latest
+        - name: postgres
+          image: ghcr.io/sondregarnes/super-duper-doodle-postgres:latest
           ports:
-            - containerPort: 8080
+            - containerPort: 5432
           env:
-            - name: DB_HOST
-              value: "postgres"
-            - name: DB_NAME
+            - name: POSTGRES_DB
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_DB
-            - name: DB_USER
+            - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_USER
-            - name: DB_PASSWORD
+            - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
                   name: postgres-secret
                   key: POSTGRES_PASSWORD
+            - name: PGDATA
+              value: /var/lib/postgresql/data/pgdata
+          volumeMounts:
+            - name: postgres-data
+              mountPath: /var/lib/postgresql/data
           resources:
             requests:
               cpu: "100m"
-              memory: "256Mi"
+              memory: "128Mi"
             limits:
               cpu: "500m"
-              memory: "512Mi"
+              memory: "256Mi"
+      volumes:
+        - name: postgres-data
+          persistentVolumeClaim:
+            claimName: postgres-pvc

@@ -1,21 +1,13 @@
+import { Routes, Route, Link } from 'react-router-dom'
 import { useState } from 'react'
+import Poll from './Poll.jsx'
 import './App.css'
 
-export default function App() {
+function Home() {
   const [clicked, setClicked] = useState(false)
 
   return (
     <>
-      <header className="site-header">
-        <nav className="nav">
-          <span className="nav-logo">Super Duper Doodle</span>
-          <ul className="nav-links">
-            <li><a href="#">Home</a></li>
-            <li><a href="#about">About</a></li>
-          </ul>
-        </nav>
-      </header>
-
       <main className="main">
         <section className="hero">
           <h1 className="hero-title">Super Duper Doodle</h1>
@@ -41,6 +33,28 @@ export default function App() {
           </p>
         </div>
       </section>
+    </>
+  )
+}
+
+export default function App() {
+  return (
+    <>
+      <header className="site-header">
+        <nav className="nav">
+          <span className="nav-logo">Super Duper Doodle</span>
+          <ul className="nav-links">
+            <li><Link to="/">Home</Link></li>
+            <li><Link to="/poll">Poll</Link></li>
+            <li><a href="#about">About</a></li>
+          </ul>
+        </nav>
+      </header>
+
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/poll" element={<Poll />} />
+      </Routes>
 
       <footer className="site-footer">
         <p>&copy; 2026 Super Duper Doodle</p>

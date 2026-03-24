@@ -8,6 +8,7 @@ on:
 env:
   FRONTEND_IMAGE: ghcr.io/sondregarnes/super-duper-doodle-frontend
   BACKEND_IMAGE: ghcr.io/sondregarnes/super-duper-doodle-backend
+  POSTGRES_IMAGE: ghcr.io/sondregarnes/super-duper-doodle-postgres
 
 jobs:
   build-and-deploy:
@@ -27,6 +28,23 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Check if postgres image exists
+        id: check-postgres
+        run: |
+          if docker manifest inspect ${{ env.POSTGRES_IMAGE }}:latest > /dev/null 2>&1; then
+            echo "exists=true" >> $GITHUB_OUTPUT
+          else
+            echo "exists=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build and push postgres
+        if: steps.check-postgres.outputs.exists == 'false'
+        uses: docker/build-push-action@v5
+        with:
+          context: ./postgres
+          push: true
+          tags: ${{ env.POSTGRES_IMAGE }}:latest
 
       - name: Build and push frontend
         uses: docker/build-push-action@v5
