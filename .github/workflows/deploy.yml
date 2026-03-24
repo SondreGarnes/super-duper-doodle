@@ -6,12 +6,11 @@ on:
       - main
 
 env:
-  FRONTEND_IMAGE: ghcr.io/sondregarnes/super-duper-doodle-frontend
-  BACKEND_IMAGE: ghcr.io/sondregarnes/super-duper-doodle-backend
+  IMAGE: ghcr.io/sondregarnes/super-duper-doodle
 
 jobs:
   build-and-deploy:
-    runs-on: self-hosted
+    runs-on: self-hosted  # runs on your Ubuntu laptop
 
     permissions:
       contents: read
@@ -28,27 +27,17 @@ jobs:
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push frontend
+      - name: Build and push image
         uses: docker/build-push-action@v5
         with:
-          context: ./frontend
+          context: .
           push: true
           tags: |
-            ${{ env.FRONTEND_IMAGE }}:latest
-            ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
-
-      - name: Build and push backend
-        uses: docker/build-push-action@v5
-        with:
-          context: ./backend
-          push: true
-          tags: |
-            ${{ env.BACKEND_IMAGE }}:latest
-            ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+            ${{ env.IMAGE }}:latest
+            ${{ env.IMAGE }}:${{ github.sha }}
 
       - name: Deploy to cluster
         run: |
-          kubectl set image deployment/frontend frontend=${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
-          kubectl set image deployment/backend backend=${{ env.BACKEND_IMAGE }}:${{ github.sha }}
-          kubectl rollout status deployment/frontend
-          kubectl rollout status deployment/backend
+          kubectl set image deployment/super-duper-doodle \
+            super-duper-doodle=${{ env.IMAGE }}:${{ github.sha }}
+          kubectl rollout status deployment/super-duper-doodle

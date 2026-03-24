@@ -2,23 +2,18 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: super-duper-doodle
+  annotations:
+    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   ingressClassName: traefik
   rules:
     - host: sondregarnaes-hp-probook-450-g5.taild1fe38.ts.net
       http:
         paths:
-          - path: /api
-            pathType: Prefix
-            backend:
-              service:
-                name: backend
-                port:
-                  number: 8080
           - path: /
             pathType: Prefix
             backend:
               service:
-                name: frontend
+                name: super-duper-doodle
                 port:
                   number: 80
