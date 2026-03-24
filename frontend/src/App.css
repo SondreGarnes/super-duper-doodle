@@ -23,6 +23,12 @@ body {
   flex-direction: column;
 }
 
+#root {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 /* Header */
 .site-header {
   border-bottom: 1px solid #222;
@@ -99,13 +105,8 @@ body {
   transition: opacity 0.2s, transform 0.1s;
 }
 
-.btn:hover {
-  opacity: 0.85;
-}
-
-.btn:active {
-  transform: scale(0.97);
-}
+.btn:hover { opacity: 0.85; }
+.btn:active { transform: scale(0.97); }
 
 /* About */
 .about {

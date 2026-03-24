@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: super-duper-doodle
+  name: frontend
   labels:
-    app: super-duper-doodle
+    app: frontend
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: super-duper-doodle
+      app: frontend
   template:
     metadata:
       labels:
-        app: super-duper-doodle
+        app: frontend
     spec:
       containers:
-        - name: super-duper-doodle
-          image: ghcr.io/sondregarnes/super-duper-doodle:latest
+        - name: frontend
+          image: ghcr.io/sondregarnes/super-duper-doodle-frontend:latest
           ports:
             - containerPort: 80
           resources:
