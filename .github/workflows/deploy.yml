@@ -64,15 +64,26 @@ jobs:
             ${{ env.BACKEND_IMAGE }}:latest
             ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
 
-      - name: Create app secret in cluster
-        run: |
-          kubectl create secret generic app-secret \
-            --from-literal=JWT_SECRET="${{ secrets.JWT_SECRET }}" \
-            --dry-run=client -o yaml | kubectl apply -f -
-
       - name: Apply Kubernetes manifests
         run: |
-          kubectl apply -f k8s/
+          kubectl apply -f k8s/postgres-secret.yaml
+          kubectl apply -f k8s/postgres-deployment.yaml
+          kubectl apply -f k8s/postgres-service.yaml
+          kubectl apply -f k8s/postgres-pvc.yaml
+
+      - name: Create app secret in cluster
+        run: |
+          kubectl delete secret app-secret --ignore-not-found
+          kubectl create secret generic app-secret \
+            --from-literal=JWT_SECRET="${{ secrets.JWT_SECRET }}"
+
+      - name: Apply remaining Kubernetes manifests
+        run: |
+          kubectl apply -f k8s/backend-deployment.yaml
+          kubectl apply -f k8s/backend-service.yaml
+          kubectl apply -f k8s/frontend-deployment.yaml
+          kubectl apply -f k8s/frontend-service.yaml
+          kubectl apply -f k8s/ingress.yaml
 
       - name: Deploy to cluster
         run: |

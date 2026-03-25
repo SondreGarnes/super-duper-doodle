@@ -38,12 +38,11 @@ public class UserController {
     @DeleteMapping("/{username}")
     public ResponseEntity<?> deleteAccount(@PathVariable String username,
                                            @AuthenticationPrincipal UserDetails userDetails) {
-        if (!userDetails.getUsername().equals(username)) {
-            return ResponseEntity.status(403).body(Map.of("error", "Not authorized"));
-        }
         try {
-            userService.deleteAccount(username);
+            userService.deleteAccount(username, userDetails.getUsername());
             return ResponseEntity.ok(Map.of("message", "Account deleted"));
+        } catch (SecurityException e) {
+            return ResponseEntity.status(403).body(Map.of("error", "Not authorized"));
         } catch (Exception e) {
             return ResponseEntity.status(500).body(Map.of("error", "Failed to delete account"));
         }

@@ -60,7 +60,7 @@ function PostCard({ post, onLike, onDislike, onDelete }) {
 }
 
 export default function Blog() {
-  const { isAuthenticated, token } = useAuth()
+  const { isAuthenticated, token, logout } = useAuth()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -89,6 +89,11 @@ export default function Blog() {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       })
+      if (res.status === 401 || res.status === 403) {
+        logout()
+        window.location.href = '/login'
+        return
+      }
       if (res.ok) {
         const updated = await res.json()
         setPosts(posts.map(p => p.id === postId ? updated : p))

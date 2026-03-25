@@ -5,7 +5,7 @@ import './Blog.css'
 
 export default function BlogPostDetail() {
   const { id } = useParams()
-  const { isAuthenticated, token, username, isAdmin } = useAuth()
+  const { isAuthenticated, token, username, isAdmin, logout } = useAuth()
   const navigate = useNavigate()
   const [post, setPost] = useState(null)
   const [comments, setComments] = useState([])
@@ -38,6 +38,11 @@ export default function BlogPostDetail() {
       method: 'POST',
       headers: { Authorization: `Bearer ${token}` },
     })
+    if (res.status === 401 || res.status === 403) {
+      logout()
+      navigate('/login')
+      return
+    }
     if (res.ok) setPost(await res.json())
   }
 
@@ -159,7 +164,7 @@ export default function BlogPostDetail() {
                   {comment.authorUsername}
                 </Link>
                 <span className="post-date">{new Date(comment.createdAt).toLocaleDateString()}</span>
-                {username === comment.authorUsername && (
+                {(username === comment.authorUsername || isAdmin) && (
                   <button
                     className="delete-btn small"
                     onClick={() => handleDeleteComment(comment.id)}

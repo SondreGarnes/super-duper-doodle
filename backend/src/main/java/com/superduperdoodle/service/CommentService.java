@@ -58,7 +58,12 @@ public class CommentService {
         if (!comment.getPost().getId().equals(postId)) {
             throw new IllegalArgumentException("Comment does not belong to this post");
         }
-        if (!comment.getAuthor().getUsername().equals(username)) {
+        User requester = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        boolean isAuthor = comment.getAuthor().getUsername().equals(username);
+        boolean isAdmin = "ADMIN".equalsIgnoreCase(requester.getRole());
+        if (!isAuthor && !isAdmin) {
             throw new SecurityException("Not authorized to delete this comment");
         }
         commentRepository.delete(comment);
