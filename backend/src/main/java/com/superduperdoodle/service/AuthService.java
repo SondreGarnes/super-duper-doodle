@@ -49,11 +49,16 @@ public class AuthService {
     }
 
     public AuthResponse login(LoginRequest request) {
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(request.username(), request.password())
-        );
-        User user = userRepository.findByUsername(request.username())
+        String identifier = request.username();
+
+        User user = userRepository.findByUsername(identifier)
+            .or(() -> userRepository.findByEmail(identifier))
             .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+
+        authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(user.getUsername(), request.password())
+        );
+
         String token = jwtService.generateToken(user.getUsername());
         return new AuthResponse(token, user.getUsername(), user.getRole());
     }

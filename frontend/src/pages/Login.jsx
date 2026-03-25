@@ -44,12 +44,12 @@ export default function Login() {
 
         <form onSubmit={handleSubmit} className="auth-form">
           <div className="form-group">
-            <label>Username</label>
+            <label>Email or Username</label>
             <input
               type="text"
               value={form.username}
               onChange={(e) => setForm({ ...form, username: e.target.value })}
-              placeholder="Your username"
+              placeholder="Your email or username"
               required
             />
           </div>
