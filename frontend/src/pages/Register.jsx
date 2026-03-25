@@ -25,8 +25,8 @@ export default function Register() {
         setError(data.error || 'Registration failed')
         return
       }
-      login(data.token, data.username)
-      navigate('/blog')
+      login(data.token, data.username, data.role)
+      navigate('/')
     } catch {
       setError('Something went wrong. Try again.')
     } finally {

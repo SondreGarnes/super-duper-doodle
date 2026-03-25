@@ -5,7 +5,7 @@ import './Blog.css'
 
 export default function Profile() {
   const { username: profileUsername } = useParams()
-  const { token, username: currentUsername } = useAuth()
+  const { token, username: currentUsername, isAdmin, logout } = useAuth()
   const navigate = useNavigate()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
@@ -16,11 +16,11 @@ export default function Profile() {
     try {
       const headers = token ? { Authorization: `Bearer ${token}` } : {}
       const res = await fetch(`/api/users/${profileUsername}/posts`, { headers })
-      if (!res.ok) { navigate('/blog'); return }
+      if (!res.ok) { navigate('/'); return }
       const data = await res.json()
       setPosts(data.posts)
     } catch {
-      navigate('/blog')
+      navigate('/')
     } finally {
       setLoading(false)
     }
@@ -42,6 +42,29 @@ export default function Profile() {
     }
   }
 
+  const handleDeletePost = async (postId) => {
+    if (!confirm('Delete this post?')) return
+    const res = await fetch(`/api/posts/${postId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (res.ok) {
+      setPosts(posts.filter(p => p.id !== postId))
+    }
+  }
+
+  const handleDeleteAccount = async () => {
+    if (!confirm('Are you sure you want to delete your account? This will also delete all your posts and cannot be undone.')) return
+    const res = await fetch(`/api/users/${profileUsername}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (res.ok) {
+      logout()
+      navigate('/')
+    }
+  }
+
   return (
     <div className="blog-page">
       <div className="profile-header">
@@ -51,11 +74,18 @@ export default function Profile() {
             {isOwnProfile ? 'Your posts' : `Posts by ${profileUsername}`}
           </p>
         </div>
-        {isOwnProfile && (
-          <Link to="/blog" className="btn" style={{ textDecoration: 'none' }}>
-            + New Post
-          </Link>
-        )}
+        <div className="profile-header-actions">
+          {isOwnProfile && (
+            <Link to="/" className="btn" style={{ textDecoration: 'none' }}>
+              + New Post
+            </Link>
+          )}
+          {isOwnProfile && (
+            <button className="delete-btn" onClick={handleDeleteAccount}>
+              Delete Account
+            </button>
+          )}
+        </div>
       </div>
 
       {loading ? (
@@ -99,6 +129,11 @@ export default function Profile() {
                     💬 {post.commentCount}
                   </Link>
                 </div>
+                {(isOwnProfile || isAdmin) && (
+                  <button className="delete-btn small" onClick={() => handleDeletePost(post.id)}>
+                    Delete
+                  </button>
+                )}
               </div>
             </div>
           ))}

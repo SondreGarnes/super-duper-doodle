@@ -5,7 +5,7 @@ import './Blog.css'
 
 export default function BlogPostDetail() {
   const { id } = useParams()
-  const { isAuthenticated, token, username } = useAuth()
+  const { isAuthenticated, token, username, isAdmin } = useAuth()
   const navigate = useNavigate()
   const [post, setPost] = useState(null)
   const [comments, setComments] = useState([])
@@ -100,7 +100,7 @@ export default function BlogPostDetail() {
             {post.authorUsername}
           </Link>
           <span className="post-date">{new Date(post.createdAt).toLocaleDateString()}</span>
-          {username === post.authorUsername && (
+          {(username === post.authorUsername || isAdmin) && (
             <button className="delete-btn" onClick={handleDelete}>Delete</button>
           )}
         </div>

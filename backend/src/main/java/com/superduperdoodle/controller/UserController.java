@@ -2,6 +2,7 @@ package com.superduperdoodle.controller;
 
 import com.superduperdoodle.dto.BlogPostResponse;
 import com.superduperdoodle.service.BlogPostService;
+import com.superduperdoodle.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,9 +16,11 @@ import java.util.Map;
 public class UserController {
 
     private final BlogPostService blogPostService;
+    private final UserService userService;
 
-    public UserController(BlogPostService blogPostService) {
+    public UserController(BlogPostService blogPostService, UserService userService) {
         this.blogPostService = blogPostService;
+        this.userService = userService;
     }
 
     @GetMapping("/{username}/posts")
@@ -29,6 +32,20 @@ public class UserController {
             return ResponseEntity.ok(Map.of("username", username, "posts", posts));
         } catch (Exception e) {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @DeleteMapping("/{username}")
+    public ResponseEntity<?> deleteAccount(@PathVariable String username,
+                                           @AuthenticationPrincipal UserDetails userDetails) {
+        if (!userDetails.getUsername().equals(username)) {
+            return ResponseEntity.status(403).body(Map.of("error", "Not authorized"));
+        }
+        try {
+            userService.deleteAccount(username);
+            return ResponseEntity.ok(Map.of("message", "Account deleted"));
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body(Map.of("error", "Failed to delete account"));
         }
     }
 }

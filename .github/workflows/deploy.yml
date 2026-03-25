@@ -67,7 +67,7 @@ jobs:
       - name: Create app secret in cluster
         run: |
           kubectl create secret generic app-secret \
-            --from-literal=JWT_SECRET=${{ secrets.JWT_SECRET }} \
+            --from-literal=JWT_SECRET="${{ secrets.JWT_SECRET }}" \
             --dry-run=client -o yaml | kubectl apply -f -
 
       - name: Apply Kubernetes manifests

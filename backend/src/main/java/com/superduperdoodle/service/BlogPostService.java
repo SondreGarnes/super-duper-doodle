@@ -68,7 +68,10 @@ public class BlogPostService {
     public void deletePost(Long id, String username) {
         BlogPost post = blogPostRepository.findById(id)
             .orElseThrow(() -> new NoSuchElementException("Post not found"));
-        if (!post.getAuthor().getUsername().equals(username)) {
+        User requester = userRepository.findByUsername(username)
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        boolean isAdmin = "ADMIN".equals(requester.getRole());
+        if (!isAdmin && !post.getAuthor().getUsername().equals(username)) {
             throw new SecurityException("Not authorized to delete this post");
         }
         blogPostRepository.delete(post);

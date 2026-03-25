@@ -8,6 +8,7 @@ import com.superduperdoodle.repository.UserRepository;
 import com.superduperdoodle.security.JwtService;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -44,14 +45,16 @@ public class AuthService {
         userRepository.save(user);
 
         String token = jwtService.generateToken(user.getUsername());
-        return new AuthResponse(token, user.getUsername());
+        return new AuthResponse(token, user.getUsername(), user.getRole());
     }
 
     public AuthResponse login(LoginRequest request) {
         authenticationManager.authenticate(
             new UsernamePasswordAuthenticationToken(request.username(), request.password())
         );
-        String token = jwtService.generateToken(request.username());
-        return new AuthResponse(token, request.username());
+        User user = userRepository.findByUsername(request.username())
+            .orElseThrow(() -> new UsernameNotFoundException("User not found"));
+        String token = jwtService.generateToken(user.getUsername());
+        return new AuthResponse(token, user.getUsername(), user.getRole());
     }
 }

@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import './Blog.css'
 
-function PostCard({ post, onLike, onDislike }) {
-  const { isAuthenticated, username } = useAuth()
+function PostCard({ post, onLike, onDislike, onDelete }) {
+  const { isAuthenticated, username, isAdmin } = useAuth()
   const isOwn = username === post.authorUsername
+  const canDelete = isOwn || isAdmin
 
   return (
     <div className="post-card">
@@ -45,9 +46,14 @@ function PostCard({ post, onLike, onDislike }) {
             💬 {post.commentCount}
           </Link>
         </div>
-        {isOwn && (
-          <span className="own-badge">Your post</span>
-        )}
+        <div className="post-card-actions">
+          {isOwn && <span className="own-badge">Your post</span>}
+          {canDelete && (
+            <button className="delete-btn small" onClick={() => onDelete(post.id)}>
+              Delete
+            </button>
+          )}
+        </div>
       </div>
     </div>
   )
@@ -55,7 +61,6 @@ function PostCard({ post, onLike, onDislike }) {
 
 export default function Blog() {
   const { isAuthenticated, token } = useAuth()
-  const navigate = useNavigate()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -90,6 +95,17 @@ export default function Blog() {
       }
     } catch {
       // silently fail
+    }
+  }
+
+  const handleDelete = async (postId) => {
+    if (!confirm('Delete this post?')) return
+    const res = await fetch(`/api/posts/${postId}`, {
+      method: 'DELETE',
+      headers: { Authorization: `Bearer ${token}` },
+    })
+    if (res.ok) {
+      setPosts(posts.filter(p => p.id !== postId))
     }
   }
 
@@ -181,6 +197,7 @@ export default function Blog() {
               post={post}
               onLike={(id) => handleVote(id, 'like')}
               onDislike={(id) => handleVote(id, 'dislike')}
+              onDelete={handleDelete}
             />
           ))}
         </div>
