@@ -66,6 +66,38 @@ body {
   color: var(--color-text);
 }
 
+.nav-logo {
+  text-decoration: none;
+}
+
+.nav-register {
+  background: var(--color-accent);
+  color: #fff !important;
+  padding: 0.3rem 0.8rem;
+  border-radius: var(--radius);
+  font-weight: 600;
+}
+
+.nav-register:hover {
+  opacity: 0.85;
+}
+
+.nav-logout {
+  background: none;
+  border: 1px solid #333;
+  border-radius: var(--radius);
+  color: var(--color-muted);
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0.25rem 0.7rem;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.nav-logout:hover {
+  border-color: #ef4444;
+  color: #ef4444;
+}
+
 /* Main */
 .main {
   flex: 1;

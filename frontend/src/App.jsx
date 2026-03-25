@@ -1,6 +1,12 @@
-import { Routes, Route, Link } from 'react-router-dom'
+import { Routes, Route, Link, useNavigate } from 'react-router-dom'
 import { useState } from 'react'
 import Poll from './Poll.jsx'
+import Login from './pages/Login.jsx'
+import Register from './pages/Register.jsx'
+import Blog from './pages/Blog.jsx'
+import BlogPostDetail from './pages/BlogPostDetail.jsx'
+import Profile from './pages/Profile.jsx'
+import { useAuth } from './context/AuthContext.jsx'
 import './App.css'
 
 function Home() {
@@ -37,23 +43,56 @@ function Home() {
   )
 }
 
+function NavBar() {
+  const { isAuthenticated, username, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
+
+  return (
+    <header className="site-header">
+      <nav className="nav">
+        <Link to="/" className="nav-logo">Super Duper Doodle</Link>
+        <ul className="nav-links">
+          <li><Link to="/">Home</Link></li>
+          <li><Link to="/blog">Blog</Link></li>
+          <li><Link to="/poll">Poll</Link></li>
+          <li><a href="/#about">About</a></li>
+          {isAuthenticated ? (
+            <>
+              <li><Link to={`/profile/${username}`}>Profile</Link></li>
+              <li>
+                <button className="nav-logout" onClick={handleLogout}>Logout</button>
+              </li>
+            </>
+          ) : (
+            <>
+              <li><Link to="/login">Login</Link></li>
+              <li><Link to="/register" className="nav-register">Register</Link></li>
+            </>
+          )}
+        </ul>
+      </nav>
+    </header>
+  )
+}
+
 export default function App() {
   return (
     <>
-      <header className="site-header">
-        <nav className="nav">
-          <span className="nav-logo">Super Duper Doodle</span>
-          <ul className="nav-links">
-            <li><Link to="/">Home</Link></li>
-            <li><Link to="/poll">Poll</Link></li>
-            <li><a href="#about">About</a></li>
-          </ul>
-        </nav>
-      </header>
+      <NavBar />
 
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/poll" element={<Poll />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/blog" element={<Blog />} />
+        <Route path="/blog/:id" element={<BlogPostDetail />} />
+        <Route path="/profile/:username" element={<Profile />} />
       </Routes>
 
       <footer className="site-footer">
