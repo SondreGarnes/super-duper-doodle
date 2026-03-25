@@ -11,6 +11,7 @@ export default function Profile() {
   const [loading, setLoading] = useState(true)
 
   const isOwnProfile = currentUsername === profileUsername
+  const canDeleteAccount = isOwnProfile || isAdmin
 
   const fetchPosts = async () => {
     try {
@@ -54,14 +55,22 @@ export default function Profile() {
   }
 
   const handleDeleteAccount = async () => {
-    if (!confirm('Are you sure you want to delete your account? This will also delete all your posts and cannot be undone.')) return
+    const confirmMessage = isOwnProfile
+      ? 'Are you sure you want to delete your account? This will also delete all your posts and cannot be undone.'
+      : `Are you sure you want to delete ${profileUsername}'s account? This will also delete all their posts and cannot be undone.`
+    if (!confirm(confirmMessage)) return
+
     const res = await fetch(`/api/users/${profileUsername}`, {
       method: 'DELETE',
       headers: { Authorization: `Bearer ${token}` },
     })
     if (res.ok) {
-      logout()
-      navigate('/')
+      if (isOwnProfile) {
+        logout()
+        navigate('/')
+      } else {
+        navigate('/blog')
+      }
     }
   }
 
@@ -80,7 +89,7 @@ export default function Profile() {
               + New Post
             </Link>
           )}
-          {isOwnProfile && (
+          {canDeleteAccount && (
             <button className="delete-btn" onClick={handleDeleteAccount}>
               Delete Account
             </button>

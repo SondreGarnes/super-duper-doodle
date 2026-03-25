@@ -2,10 +2,15 @@ import { createContext, useContext, useState } from 'react'
 
 const AuthContext = createContext(null)
 
+function normalizeStoredValue(value) {
+  if (!value || value === 'null' || value === 'undefined') return null
+  return value
+}
+
 export function AuthProvider({ children }) {
-  const [token, setToken] = useState(localStorage.getItem('token'))
-  const [username, setUsername] = useState(localStorage.getItem('username'))
-  const [role, setRole] = useState(localStorage.getItem('role'))
+  const [token, setToken] = useState(normalizeStoredValue(localStorage.getItem('token')))
+  const [username, setUsername] = useState(normalizeStoredValue(localStorage.getItem('username')))
+  const [role, setRole] = useState(normalizeStoredValue(localStorage.getItem('role')))
 
   const login = (newToken, newUsername, newRole) => {
     localStorage.setItem('token', newToken)
