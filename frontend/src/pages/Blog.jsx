@@ -89,9 +89,13 @@ export default function Blog() {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       })
-      if (res.status === 401 || res.status === 403) {
+      if (res.status === 401) {
         logout()
         window.location.href = '/login'
+        return
+      }
+      if (res.status === 403) {
+        alert('Vote was rejected (403). Please re-login if this keeps happening.')
         return
       }
       if (res.ok) {
