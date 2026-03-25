@@ -41,19 +41,19 @@ public class LikeService {
 
         if (existing.isPresent()) {
             PostLike like = existing.get();
-            if (like.isLike() == isLike) {
+            if (like.isLiked() == isLike) {
                 // Same vote — toggle off
                 postLikeRepository.delete(like);
             } else {
                 // Different vote — switch
-                like.setLike(isLike);
+                like.setLiked(isLike);
                 postLikeRepository.save(like);
             }
         } else {
             PostLike like = new PostLike();
             like.setPost(post);
             like.setUser(user);
-            like.setLike(isLike);
+            like.setLiked(isLike);
             postLikeRepository.save(like);
         }
 

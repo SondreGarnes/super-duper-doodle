@@ -22,13 +22,13 @@ public class PostLike {
 
     // true = like, false = dislike
     @Column(nullable = false)
-    private boolean isLike;
+    private boolean liked;
 
     public Long getId() { return id; }
     public BlogPost getPost() { return post; }
     public void setPost(BlogPost post) { this.post = post; }
     public User getUser() { return user; }
     public void setUser(User user) { this.user = user; }
-    public boolean isLike() { return isLike; }
-    public void setLike(boolean like) { isLike = like; }
+    public boolean isLiked() { return liked; }
+    public void setLiked(boolean liked) { this.liked = liked; }
 }

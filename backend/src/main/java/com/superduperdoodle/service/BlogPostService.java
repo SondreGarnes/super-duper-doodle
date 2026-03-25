@@ -75,8 +75,8 @@ public class BlogPostService {
     }
 
     public BlogPostResponse toResponse(BlogPost post, String currentUsername) {
-        long likes = postLikeRepository.countByPostAndIsLike(post, true);
-        long dislikes = postLikeRepository.countByPostAndIsLike(post, false);
+        long likes = postLikeRepository.countByPostAndLiked(post, true);
+        long dislikes = postLikeRepository.countByPostAndLiked(post, false);
         long comments = commentRepository.findByPostOrderByCreatedAtAsc(post).size();
 
         String userVote = null;
@@ -85,7 +85,7 @@ public class BlogPostService {
             if (maybeUser.isPresent()) {
                 var maybeLike = postLikeRepository.findByPostAndUser(post, maybeUser.get());
                 if (maybeLike.isPresent()) {
-                    userVote = maybeLike.get().isLike() ? "LIKE" : "DISLIKE";
+                    userVote = maybeLike.get().isLiked() ? "LIKE" : "DISLIKE";
                 }
             }
         }
