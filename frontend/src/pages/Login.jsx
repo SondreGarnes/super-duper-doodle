@@ -1,11 +1,13 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
 import './Auth.css'
 
 export default function Login() {
   const { login } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = new URLSearchParams(location.search).get('returnTo') || '/'
   const [form, setForm] = useState({ username: '', password: '' })
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -26,7 +28,7 @@ export default function Login() {
         return
       }
       login(data.token, data.username, data.role)
-      navigate('/')
+      navigate(returnTo)
     } catch {
       setError('Something went wrong. Try again.')
     } finally {

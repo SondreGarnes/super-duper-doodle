@@ -91,7 +91,7 @@ export default function Blog() {
       })
       if (res.status === 401) {
         logout()
-        window.location.href = '/login'
+        window.location.href = '/login?returnTo=/'
         return
       }
       if (res.status === 403) {

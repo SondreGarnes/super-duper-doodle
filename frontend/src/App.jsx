@@ -47,7 +47,7 @@ function NavBar() {
           <li><Link to="/about">About</Link></li>
           {isAuthenticated ? (
             <>
-              <li> Logged in as {username}</li>
+              <li> {username}</li>
               <li><Link to={`/profile/${username}`}>Profile</Link></li>
               <li>
                 <button className="nav-logout" onClick={handleLogout}>Logout</button>

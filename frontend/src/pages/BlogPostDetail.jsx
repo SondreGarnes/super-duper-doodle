@@ -40,7 +40,7 @@ export default function BlogPostDetail() {
     })
     if (res.status === 401) {
       logout()
-      navigate('/login')
+      navigate(`/login?returnTo=/blog/${id}`)
       return
     }
     if (res.status === 403) {
