@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import VoteButtons from '../components/VoteButtons'
+import { votePost, deletePost, authHeaders } from '../api/posts'
 import './Blog.css'
 
 export default function BlogPostDetail() {
   const { id } = useParams()
-  const { isAuthenticated, token, username, isAdmin, logout } = useAuth()
+  const { isAuthenticated, token, username, isAdmin } = useAuth()
   const navigate = useNavigate()
   const [post, setPost] = useState(null)
   const [comments, setComments] = useState([])
@@ -15,7 +17,7 @@ export default function BlogPostDetail() {
 
   const fetchPost = async () => {
     try {
-      const headers = token ? { Authorization: `Bearer ${token}` } : {}
+      const headers = authHeaders(token)
       const [postRes, commentsRes] = await Promise.all([
         fetch(`/api/posts/${id}`, { headers }),
         fetch(`/api/posts/${id}/comments`, { headers }),
@@ -34,13 +36,9 @@ export default function BlogPostDetail() {
 
   const handleVote = async (type) => {
     if (!isAuthenticated) return
-    const res = await fetch(`/api/posts/${id}/${type}`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const res = await votePost(id, type, token)
     if (res.status === 401) {
-      logout()
-      navigate(`/login?returnTo=/blog/${id}`)
+      alert('Vote was rejected status 401')
       return
     }
     if (res.status === 403) {
@@ -52,10 +50,7 @@ export default function BlogPostDetail() {
 
   const handleDelete = async () => {
     if (!confirm('Delete this post?')) return
-    const res = await fetch(`/api/posts/${id}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const res = await deletePost(id, token)
     if (res.ok) navigate('/blog')
   }
 
@@ -115,22 +110,11 @@ export default function BlogPostDetail() {
         </div>
 
         <div className="post-detail-actions">
-          <button
-            className={`vote-btn ${post.userVote === 'LIKE' ? 'active-like' : ''}`}
-            onClick={() => handleVote('like')}
-            disabled={!isAuthenticated}
-            title={isAuthenticated ? 'Like' : 'Log in to vote'}
-          >
-            ▲ {post.likeCount}
-          </button>
-          <button
-            className={`vote-btn ${post.userVote === 'DISLIKE' ? 'active-dislike' : ''}`}
-            onClick={() => handleVote('dislike')}
-            disabled={!isAuthenticated}
-            title={isAuthenticated ? 'Dislike' : 'Log in to vote'}
-          >
-            ▼ {post.dislikeCount}
-          </button>
+          <VoteButtons
+            post={post}
+            onLike={() => handleVote('like')}
+            onDislike={() => handleVote('dislike')}
+          />
         </div>
 
         <div className="post-detail-content">{post.content}</div>

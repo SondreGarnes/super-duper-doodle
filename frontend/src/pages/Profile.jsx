@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import PostCard from '../components/PostCard'
+import { votePost, deletePost, authHeaders } from '../api/posts'
 import './Blog.css'
 
 export default function Profile() {
@@ -15,8 +17,7 @@ export default function Profile() {
 
   const fetchPosts = async () => {
     try {
-      const headers = token ? { Authorization: `Bearer ${token}` } : {}
-      const res = await fetch(`/api/users/${profileUsername}/posts`, { headers })
+      const res = await fetch(`/api/users/${profileUsername}/posts`, { headers: authHeaders(token) })
       if (!res.ok) { navigate('/'); return }
       const data = await res.json()
       setPosts(data.posts)
@@ -33,10 +34,7 @@ export default function Profile() {
 
   const handleVote = async (postId, type) => {
     if (!token) return
-    const res = await fetch(`/api/posts/${postId}/${type}`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const res = await votePost(postId, type, token)
     if (res.ok) {
       const updated = await res.json()
       setPosts(posts.map(p => p.id === postId ? updated : p))
@@ -45,10 +43,7 @@ export default function Profile() {
 
   const handleDeletePost = async (postId) => {
     if (!confirm('Delete this post?')) return
-    const res = await fetch(`/api/posts/${postId}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const res = await deletePost(postId, token)
     if (res.ok) {
       setPosts(posts.filter(p => p.id !== postId))
     }
@@ -106,45 +101,14 @@ export default function Profile() {
       ) : (
         <div className="post-list">
           {posts.map(post => (
-            <div key={post.id} className="post-card">
-              <div className="post-card-header">
-                <Link to={`/blog/${post.id}`} className="post-card-title">{post.title}</Link>
-                <div className="post-meta">
-                  <span className="post-date">{new Date(post.createdAt).toLocaleDateString()}</span>
-                </div>
-              </div>
-
-              <p className="post-excerpt">
-                {post.content.length > 220 ? post.content.slice(0, 220) + '…' : post.content}
-              </p>
-
-              <div className="post-card-footer">
-                <div className="post-actions">
-                  <button
-                    className={`vote-btn ${post.userVote === 'LIKE' ? 'active-like' : ''}`}
-                    onClick={() => handleVote(post.id, 'like')}
-                    disabled={!token}
-                  >
-                    ▲ {post.likeCount}
-                  </button>
-                  <button
-                    className={`vote-btn ${post.userVote === 'DISLIKE' ? 'active-dislike' : ''}`}
-                    onClick={() => handleVote(post.id, 'dislike')}
-                    disabled={!token}
-                  >
-                    ▼ {post.dislikeCount}
-                  </button>
-                  <Link to={`/blog/${post.id}`} className="comment-count">
-                    💬 {post.commentCount}
-                  </Link>
-                </div>
-                {(isOwnProfile || isAdmin) && (
-                  <button className="delete-btn small" onClick={() => handleDeletePost(post.id)}>
-                    Delete
-                  </button>
-                )}
-              </div>
-            </div>
+            <PostCard
+              key={post.id}
+              post={post}
+              onLike={(id) => handleVote(id, 'like')}
+              onDislike={(id) => handleVote(id, 'dislike')}
+              onDelete={handleDeletePost}
+              showAuthor={false}
+            />
           ))}
         </div>
       )}

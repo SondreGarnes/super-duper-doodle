@@ -1,66 +1,12 @@
 import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../context/AuthContext'
+import PostCard from '../components/PostCard'
+import { votePost, deletePost, authHeaders } from '../api/posts'
 import './Blog.css'
 
-function PostCard({ post, onLike, onDislike, onDelete }) {
-  const { isAuthenticated, username, isAdmin } = useAuth()
-  const isOwn = username === post.authorUsername
-  const canDelete = isOwn || isAdmin
-
-  return (
-    <div className="post-card">
-      <div className="post-card-header">
-        <Link to={`/blog/${post.id}`} className="post-card-title">{post.title}</Link>
-        <div className="post-meta">
-          <Link to={`/profile/${post.authorUsername}`} className="post-author">
-            {post.authorUsername}
-          </Link>
-          <span className="post-date">{new Date(post.createdAt).toLocaleDateString()}</span>
-        </div>
-      </div>
-
-      <p className="post-excerpt">
-        {post.content.length > 220 ? post.content.slice(0, 220) + '…' : post.content}
-      </p>
-
-      <div className="post-card-footer">
-        <div className="post-actions">
-          <button
-            className={`vote-btn ${post.userVote === 'LIKE' ? 'active-like' : ''}`}
-            onClick={() => isAuthenticated && onLike(post.id)}
-            disabled={!isAuthenticated}
-            title={isAuthenticated ? 'Like' : 'Log in to vote'}
-          >
-            ▲ {post.likeCount}
-          </button>
-          <button
-            className={`vote-btn ${post.userVote === 'DISLIKE' ? 'active-dislike' : ''}`}
-            onClick={() => isAuthenticated && onDislike(post.id)}
-            disabled={!isAuthenticated}
-            title={isAuthenticated ? 'Dislike' : 'Log in to vote'}
-          >
-            ▼ {post.dislikeCount}
-          </button>
-          <Link to={`/blog/${post.id}`} className="comment-count">
-            💬 {post.commentCount}
-          </Link>
-        </div>
-        <div className="post-card-actions">
-          {isOwn && <span className="own-badge">Your post</span>}
-          {canDelete && (
-            <button className="delete-btn small" onClick={() => onDelete(post.id)}>
-              Delete
-            </button>
-          )}
-        </div>
-      </div>
-    </div>
-  )
-}
-
 export default function Blog() {
-  const { isAuthenticated, token, logout } = useAuth()
+  const { isAuthenticated, token } = useAuth()
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [showForm, setShowForm] = useState(false)
@@ -70,8 +16,7 @@ export default function Blog() {
 
   const fetchPosts = async () => {
     try {
-      const headers = token ? { Authorization: `Bearer ${token}` } : {}
-      const res = await fetch('/api/posts', { headers })
+      const res = await fetch('/api/posts', { headers: authHeaders(token) })
       const data = await res.json()
       setPosts(data)
     } catch {
@@ -85,13 +30,9 @@ export default function Blog() {
 
   const handleVote = async (postId, type) => {
     try {
-      const res = await fetch(`/api/posts/${postId}/${type}`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-      })
+      const res = await votePost(postId, type, token)
       if (res.status === 401) {
-        logout()
-        window.location.href = '/login?returnTo=/'
+        alert('Status 401')
         return
       }
       if (res.status === 403) {
@@ -109,10 +50,7 @@ export default function Blog() {
 
   const handleDelete = async (postId) => {
     if (!confirm('Delete this post?')) return
-    const res = await fetch(`/api/posts/${postId}`, {
-      method: 'DELETE',
-      headers: { Authorization: `Bearer ${token}` },
-    })
+    const res = await deletePost(postId, token)
     if (res.ok) {
       setPosts(posts.filter(p => p.id !== postId))
     }
