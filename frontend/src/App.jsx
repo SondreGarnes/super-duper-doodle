@@ -5,6 +5,7 @@ import Register from './pages/Register.jsx'
 import Blog from './pages/Blog.jsx'
 import BlogPostDetail from './pages/BlogPostDetail.jsx'
 import Profile from './pages/Profile.jsx'
+import Toby from './pages/Toby.jsx'
 import { useAuth } from './context/AuthContext.jsx'
 import './App.css'
 
@@ -45,6 +46,7 @@ function NavBar() {
           <li><Link to="/">Home</Link></li>
           <li><Link to="/poll">Poll</Link></li>
           <li><Link to="/about">About</Link></li>
+          <li><Link to="/toby">Toby AI</Link></li>
           {isAuthenticated ? (
             <>
               <li> {username}</li>
@@ -79,6 +81,7 @@ export default function App() {
         <Route path="/blog" element={<Blog />} />
         <Route path="/blog/:id" element={<BlogPostDetail />} />
         <Route path="/profile/:username" element={<Profile />} />
+        <Route path="/toby" element={<Toby />} />
       </Routes>
 
       <footer className="site-footer">
