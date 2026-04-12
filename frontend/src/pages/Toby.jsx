@@ -4,8 +4,14 @@ import './Toby.css'
 function getTobyResponse() {
   const roll = Math.random()
   if (roll < 0.20) return null          // silence ~20%
-  if (roll < 0.45) return `${Math.floor(Math.random() * 10) + 1}/10`  // rating ~25%
-  return Math.random() < 0.5 ? 'Yes.' : 'No.'  // yes/no ~55%
+  if (roll < 0.35) return `${Math.floor(Math.random() * 10) + 1}/10`  // rating ~15%
+  const answers = [
+    'Yes.',
+    'No.',
+    'Njaa både ja og nei.',
+    'På ene siden ja, på andre siden nei.',
+  ]
+  return answers[Math.floor(Math.random() * answers.length)]
 }
 
 export default function Toby() {
